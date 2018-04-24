@@ -1,0 +1,41 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				$.ajaxSetup({
+						data:{'csrfmiddlewaretoken':'{{csrf_token}}'}
+					})
+				$('.btn').click(function(){
+					$.ajax({
+									url:'/user/login_handle/',
+									type:'post', 
+									// async:false,
+									// data:{'username':$uname.val(),'pwd':$upwd.val(),'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val()},
+									// data:{$('.login_form').serialize(),'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val()},
+									data:{"username":'Anner5',"pwd":3},
+									dataType:'json',
+									success:function(data){
+										alert(data['name']);
+									},
+									error:function(jqXHR){
+										console.log(jqXHR)
+									}
+					})
+				});
+			})	
+	</script>
+</head>
+<body>
+	<button ><a href="/user/login_handle">GET</a></button>
+	<br>
+	<button class="btn">POST-Ajax</button>
+	<br>
+	{%for dt in data %}
+	<span>{{dt}}</span>
+	{% endfor %}
+</body>
+</html>
