@@ -5,14 +5,13 @@
 {%endblock head%}
 {% block body %}
 
-<!-- {% block name %}{{uname}}{% endblock name %} -->
 	<div class="main_con clearfix">
 		<div class="left_menu_con clearfix">
 			<h3>用户中心</h3>
 			<ul>
-				<li><a href="/user/user_center_info">· 个人信息</a></li>
-				<li><a href="/user/user_center_order/">· 全部订单</a></li>
-				<li><a href="/user/user_center_site/" class="active">· 收货地址</a></li>
+				<li><a href="/user/info/">· 个人信息</a></li>
+				<li><a href="/user/order/">· 全部订单</a></li>
+				<li><a href="/user/site/" class="active">· 收货地址</a></li>
 			</ul>
 		</div>
 		<div class="right_content clearfix">
@@ -26,7 +25,7 @@
 				</div>
 				<h3 class="common_title2">编辑地址</h3>
 				<div class="site_con">
-					<form method="post" action="/user/user_center_site/">
+					<form method="post" action="/user/user_site/">
 					{% csrf_token %}
 						<div class="form_group">
 							<label>收件人：</label>

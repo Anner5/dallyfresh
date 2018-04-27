@@ -39,10 +39,12 @@ $(function(){
 
 
 	function check_user_name(){
-		var len = $('#user_name').val().length;
-		if(len<5||len>20)
+		// var len = $('#user_name').val().length;
+		// if(len<5||len>20)
+		var re = /^[a-zA-Z0-9_-]{5,20}$/;
+		if(!re.test($('#user_name').val()))
 		{
-			$('#user_name').next().html('请输入5-20个字符的用户名')
+			$('#user_name').next().html('请输入5-10位英文/数字/下划线字符的用户名')
 			$('#user_name').next().show();
 			error_name = true;
 		}

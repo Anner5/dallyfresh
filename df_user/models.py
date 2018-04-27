@@ -5,7 +5,9 @@ class UserInfo(models.Model):
 	upwd = models.CharField(max_length=40)
 	uemail = models.CharField(max_length=30)
 	isDelete = models.BooleanField(default=0)
-	
+	def __str__(self):
+		return self.uname.encode('utf-8')
+	 
 
 class UserAddress(models.Model):
 	ureceiver = models.CharField(max_length=20,default='')
@@ -14,4 +16,6 @@ class UserAddress(models.Model):
 	uphone = models.CharField(max_length=11,default='')
 	isDelete = models.BooleanField(default=0)
 	user = models.ForeignKey('UserInfo')
+	def __str__(self):
+		return self.ureceiver.encode('utf-8')
 		

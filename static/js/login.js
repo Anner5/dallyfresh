@@ -16,11 +16,11 @@ $(function(){
 		$(this).next().hide();
 	});		
 	function check_name(obj){
-		var len = obj.val().length;
+		var re = /^[a-zA-Z0-9_]{5,20}$/
 		obj.next().hide();
-		if (len<5||len>10)
+		if (!re.test(obj.val()))
 			{
-				obj.next().html('请输入5-10位字符的用户名').show();
+				obj.next().html('请输入5-10位英文/数字/下划线字符的用户名').show();
 				crr_name = false
 			}
 		else				
@@ -46,21 +46,23 @@ $(function(){
 		check_pwd($upwd);
 		if (crr_name&&crr_pwd)
 		{	
-			$.ajaxSetup({
-						data:{'csrfmiddlewaretoken':'{{csrf_token}}'}
-					})
+			// console.log($('#login_form').serializeArray(),$('#login_form').serialize())
+			// $.ajaxSetup({
+			// 			data:{'csrfmiddlewaretoken':'{{csrf_token}}'}
+			// 		})
 			$.ajax({
 							url:'/user/login_handle/',
 							type:'post', 
 							// async:false,
-							// data:{'username':$uname.val(),'pwd':$upwd.val(),'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val()},
-							data:{'username':$uname.val(),'pwd':$upwd.val(),'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val()},
+							data:$('#login_form').serializeArray(), 
+							/*{'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val()},*/
 							dataType:'json',
 							success:function(data)
 							{
-								var name = data['name'],pwd = data['pwd']
+								var name = data['name'],pwd = data['pwd'],url=data['url'];
 								if(name&&pwd){
-									window.location.href = '/user/user_center_info'
+									// window.location.href = url
+									window.location.href = document.referrer
 								}
 								if(name==0)
 								{
@@ -87,49 +89,5 @@ $(function(){
 		}
 	});
 });
-		// $('#login_form').submit(function(){
-		// 	check_name($uname);
-		// 	check_pwd($upwd);
-		// 	if (crr_name&&crr_pwd)
-		// 	{		
-		// 		$.psot('/user/login_handle/',{'username':$uname.val(),'pwd':$upwd.val()},function(data){
-		// 			var name = data['name'],pwd = data['pwd']
-		// 			alert(data)
-		// 			if(name&&pwd)
-		// 			{
-		// 				jumpNow = true;
-		// 			}
-		// 			else
-		// 			{
-		// 				jumpNow = false;
-		// 				if(name==0)
-		// 				{
-		// 					$uname.next().html('用户名不存在,请先注册再登陆!').show();
-		// 					ev.preventDefault();
-		// 				}
-		// 				if(pwd==0)
-		// 				{
-		// 					$upwd.next().html('密码错误,请核对后重新输入!').show();
-		// 				};
-		// 			}
-		// 		})
-				
-		// 		if (jumpNow) 
-		// 		{
-		// 			return true;
-		// 		}
-		// 		else
-		// 		{
-		// 			return false;
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		return false;
-		// 		// ev.preventDefault();
-		// 	}
-		// })
-
-
 
 
