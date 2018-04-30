@@ -60,9 +60,11 @@ $(function(){
 							success:function(data)
 							{
 								var name = data['name'],pwd = data['pwd'],url=data['url'];
-								if(name&&pwd){
+								if(name&&pwd)
+								{
 									// window.location.href = url
-									window.location.href = document.referrer
+									// 如果前一页是注册页或者是直接进入登录页
+									('register'.indexOf(document.referrer)|| 'login'.indexOf(location.href))?window.location.href ='/':window.location.href =document.referrer;
 								}
 								if(name==0)
 								{

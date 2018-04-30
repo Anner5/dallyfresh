@@ -1,9 +1,12 @@
 #encoding=utf-8
 from django.shortcuts import render,redirect
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from hashlib import sha1
 from models import *
 import user_decorator
+from df_goods.models import GoodsInfo
+from df_cart.models import *
+from django.db.models import Sum,Count
 
 #注册
 def register(request):
@@ -62,8 +65,10 @@ def login_handle(request):
 		# 密码验证
 		if name==uname and pwd==upwd:
 			request.session['user_id'] = obj['id']
-			request.session['uname'] = uname
-			request.session.set_expiry(0)
+			request.session['uname'] = uname			
+			#查询购物车数据
+			request.session['cart_count'] = CartInfo.objects.values('count').aggregate(cart_count=Sum('count'))['cart_count']
+			# request.session.set_expiry(0)
 			context = {'name':name==uname,'pwd':pwd==upwd,'uname':uname,'url':url}
 			# 设置cookie
 			try:
@@ -84,13 +89,22 @@ def login_handle(request):
 # 个人信息
 def user_info(request):
 	info = UserInfo.objects.get(id=request.session['user_id'])
-	context = {'uname':info.uname,'uemail':info.uemail,'pageName':1,'title':'个人信息'}
+	scan_ids = request.COOKIES.get('scan_ids','')
+	scan_ids = scan_ids.split('_')
+	print(scan_ids)
+	scan_info = []
+	if scan_ids != ['']:
+		for each in scan_ids:
+			each = each.split(',')
+			scan_info.append((each[0],GoodsInfo.objects.get(pk=each[1])))
+	context = {'uemail':info.uemail,'pageName':1,'title':'个人信息','scan_info':scan_info}
+	print(scan_info)
 	return render(request,'df_user/user_center_info.html',context)
 
 # 全部订单
 @user_decorator.login
 def user_order(request):
-	context={'uname':request.session['uname'],'pageName':1,'title':'全部订单'}
+	context={'pageName':1,'title':'全部订单'}
 	return render(request,'df_user/user_center_order.html',context)
 # 收货地址
 @user_decorator.login
@@ -112,18 +126,25 @@ def user_site(request):
 			addr.save()
 		else:
 			warm = "<script type=\"text/javascript\">alert(\"数据已存在\")</script>"
-	context={'addr':addr,'uname':info.uname,'warm':warm,'pageName':1,'title':'收货地址'}
+	context={'addr':addr,'warm':warm,'pageName':1,'title':'收货地址'}
 	return render(request,'df_user/user_center_site.html',context)
 
 # 退出
 def logout(request):
+
+		# request.session.flush()
+		# request.session.clear()
 	try:
 		del request.session['user_id']
 		del request.session['uname']
-		# request.session.clear()
+			
 	except Exception:
 		pass
-	return redirect('/')
+
+	finally:
+		response = HttpResponseRedirect('/')
+		response.delete_cookie('scan_ids')
+		return response
 
 
 

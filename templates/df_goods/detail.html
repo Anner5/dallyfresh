@@ -1,10 +1,4 @@
 {% extends 'df_goods/base.html'%}
-	{% block cart%}
-	<div class="guest_cart fr">
-		<a href="cart.html" class="cart_name fl">我的购物车</a>
-		<div class="goods_count fr" id="show_count">1</div>
-	</div>
-	{% endblock cart%}
 	{% block detail %}
 	<div class="goods_detail_con clearfix">
 		<div class="goods_detail_pic fl"><img src="/static/df_goods/goods{{goodsinfo.gpic}}.jpg" "></div>
@@ -47,7 +41,7 @@
 			</div>
 
 		</div>
-	</div>
+	<div class="add_jump"></div>
 {% endblock goods%}
 {% block footJs %}
 	<script type="text/javascript">
@@ -57,39 +51,28 @@
 		});
 	</script>
 	<script type="text/javascript">
-		// 购物位置调整
-		var $add_x = $('#add_cart').offset().top;
-		var $add_y = $('#add_cart').offset().left;
-
-		var $to_x = $('#show_count').offset().top;
-		var $to_y = $('#show_count').offset().left;
-
-		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
-		$('#add_cart').click(function(){
-			$(".add_jump").stop().animate({
-				'left': $to_y+7,
-				'top': $to_x+7},
-				"fast", function() {
-					$(".add_jump").fadeOut('fast',function(){
-						$('#show_count').html(2);
-					});
-			});
-		})
-		// 用户操作购物车
 		var $show = $('.num_show'),
 				$add = $('.add'),
 				$munis = $('.minus'),
 				$total = $('.total em');
 		var	price = parseFloat($('.show_pirze em').text());
 		var count = parseInt($show.val());
+		var total_count = parseInt($('#show_count').html())
 
+		// 加入购物车动画
+		var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+		
+		// 用户操作购物车
 		// 数量选择
 		$total.html(parseFloat(count*price).toFixed(2)+'元')
 		$add.click(function(){				
 				count += 1;
 				$show.val(count);
 				$total.html(parseFloat(count*price).toFixed(2)+'元')
-				console.log()
 		});
 		$munis.click(function(){
 				if (count>0)
@@ -105,11 +88,42 @@
 		})
 		// 购买
 		$('.buy_btn').click(function(){
-
+			// 判断是否登录状态
+			//indexOf false返回-1
+			if ($('.login_btn').text().indexOf('登录')>0){
+				alert('请先登录再购买');
+				location.href = '/user/login/';
+				return;
+			}
+			$('#show_count').html(count+total_count);
+			$.get('/cart/add{{goodsinfo.id}}_'+'0/',function(data){
+				if (data['count'] > 0)
+				{
+					location.href = '/cart/';
+				}
+			})
 		})
 		// 加入购物车
 		$('.add_cart').click(function(){
-			$('#show_count').html(count)
+			// 判断是否登录状态
+			//indexOf false返回-1
+			if ($('.login_btn').text().indexOf('登录')>0){
+				alert('请先登录再购买');
+				location.href = '/user/login/';
+				return;
+			}
+			// 动画
+			$(".add_jump").stop().animate({
+				'left': $to_y+7,
+				'top': $to_x+7},
+				"fast", function() {
+					$(".add_jump").fadeOut('fast',function(){
+						$('#show_count').html(count+total_count);
+					});
+			});
+			// 异步
+			$('#show_count').html(count+total_count);
+			$.get('/cart/add{{goodsinfo.id}}_'+count+'/');
 		})
 	</script>
 {% endblock footJs %}	

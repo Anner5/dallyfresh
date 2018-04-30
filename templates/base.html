@@ -14,7 +14,7 @@
 			<div class="welcome fl">欢迎来到天天生鲜活!</div>
 			<div class="fr">
 				{% if request.session.uname > 0 %}
-				<div class="login_info fl">欢迎您：<em>{{uname}}</em>
+				<div class="login_info fl">欢迎您：<em>{{request.session.uname}}</em>
 				<span>|</span>
 				<a href="/user/logout/" class="logout">退出</a>
 				</div>
@@ -29,7 +29,7 @@
 					<span>|</span>
 					<a href="{% url 'user:info'%}">用户中心</a>
 					<span>|</span>
-					<a href="cart.html">我的购物车</a>
+					<a href="/cart/">我的购物车</a>
 					<span>|</span>
 					<a href="{% url 'user:order'%}">我的订单</a>
 				</div>
@@ -42,13 +42,20 @@
 		{% if pageName > 0%}
 		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;用户中心</div>
 		{% endif %}
+		{% if orderName > 0 %}
+		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;提交订单</div>
+		{% endif %}
 		
 		<div class="search_con fl">
 			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
 			<input type="button" class="input_btn fr" name="" value="搜索">
-		</div>	
-
-		{% block cart%}{% endblock cart%}
+		</div>
+		{% if guest_cart > 0 %}	
+		<div class="guest_cart fr">
+			<a href="/cart/" class="cart_name fl">我的购物车</a>
+			<div class="goods_count fr" id="show_count">{{count|default:request.session.cart_count|default:'0'}}</div>
+		</div>
+		{% endif %}
 	</div>
 
 	{%block body%}{%endblock body%}
